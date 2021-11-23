@@ -12,12 +12,6 @@ class InvalidKeysError(Exception):
         super().__init__(self.message, self.diff)
 
 
-class AlreadyExistsError(Exception):
-    def __init__(self):
-        self.message = {"Anime already exists!"}
-        super().__init__(self.message)
-
-
 class NotFoundError(Exception):
     def __init__(self):
         self.message = {"Error": "Not found!"}

@@ -2,6 +2,7 @@
 from dotenv import load_dotenv
 from os import getenv
 import psycopg2
+from psycopg2 import sql
 from ipdb import set_trace
 
 from exceptions.app_exceptions import NotFoundError
@@ -85,7 +86,6 @@ class Animes:
 
         show_animes = cur.fetchall()
         result = [dict(zip(Animes.fieldnames, line)) for line in show_animes]
-        # set_trace()
 
         conn.commit()
         cur.close()
@@ -111,8 +111,6 @@ class Animes:
             show_selected = cur.fetchone()
             result = [dict(zip(Animes.fieldnames, show_selected))]
 
-            # set_trace()
-
             conn.commit()
             cur.close()
             conn.close()
@@ -124,28 +122,39 @@ class Animes:
 
     @staticmethod
     def update(data, anime_id):
+        try:
+            Animes.create_table()
 
-        Animes.create_table()
+            conn = psycopg2.connect(**configs)
+            cur = conn.cursor()
 
-        conn = psycopg2.connect(**configs)
-        cur = conn.cursor()
+            columns = [sql.Identifier(key) for key in data.keys()]
+            values = [sql.Literal(value) for value in data.values()]
+            query = sql.SQL(
+                """
+                    update animes set ({columns}) = ({values}) where id={anime_id} returning *
+                """
+            ).format(
+                id=sql.Literal(anime_id),
+                columns=sql.SQL(",").join(columns),
+                values=sql.SQL(",").join(values),
+            )
+            print(query)
+            set_trace()
 
-        cur.execute(
-            """
-                update animes set %s where id=%s returning *
-            """,
-            (data, anime_id,)
-        )
+            cur.execute(query)
 
-        to_update = cur.fetchone()
-        result = dict(zip(Animes.fieldnames, [elt for elt in to_update]))
-        # set_trace()
+            to_update = cur.fetchone()
+            result = dict(zip(Animes.fieldnames, to_update))
 
-        conn.commit()
-        cur.close()
-        conn.close()
+            conn.commit()
+            cur.close()
+            conn.close()
 
-        return result
+            return result
+
+        except:
+            raise NotFoundError
 
     @staticmethod
     def delete(anime_id):

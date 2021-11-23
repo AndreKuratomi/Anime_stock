@@ -1,9 +1,8 @@
 from flask import request
-# from flask import Blueprint
-from ipdb import set_trace
 from app.models.app_models import Animes
 from exceptions.app_exceptions import InvalidKeysError, NotFoundError
 from psycopg2.errors import UniqueViolation
+from ipdb import set_trace
 
 
 valid_keys = {"anime", "released_date", "seasons"}
@@ -59,10 +58,7 @@ def blue_update(anime_id):
             raise InvalidKeysError(comparison.pop())
 
         else:
-            # set_trace()
             to_update = Animes.update(data, anime_id)
-            if not to_update:
-                raise NotFoundError
             return to_update, 201
 
     except NotFoundError as nfe:
