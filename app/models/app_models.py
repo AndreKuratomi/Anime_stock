@@ -122,6 +122,7 @@ class Animes:
 
     @staticmethod
     def update(data, anime_id):
+
         try:
             Animes.create_table()
 
@@ -132,15 +133,13 @@ class Animes:
             values = [sql.Literal(value) for value in data.values()]
             query = sql.SQL(
                 """
-                    update animes set ({columns}) = ({values}) where id={anime_id} returning *
+                    update animes set ({columns}) = row({values}) where id={anime_id} returning *
                 """
             ).format(
-                id=sql.Literal(anime_id),
+                anime_id=sql.Literal(anime_id),
                 columns=sql.SQL(",").join(columns),
                 values=sql.SQL(",").join(values),
             )
-            print(query)
-            set_trace()
 
             cur.execute(query)
 

@@ -7,7 +7,7 @@ class InvalidKeysError(Exception):
         self.message = {
             "available keys": [
                 "anime", "released_date", "seasons"],
-            "wrong keys ended": f"{self.diff}"}
+            "wrong keys ended": self.diff}
 
         super().__init__(self.message, self.diff)
 

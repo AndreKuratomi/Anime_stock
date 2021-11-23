@@ -16,8 +16,12 @@ def blue_get_create():
         data_set = set(data_keys)
         comparison = data_set.difference(valid_keys)
 
+        list_for_exception = []
+        for elts in comparison:
+            list_for_exception.append(elts)
+
         if comparison != set():
-            raise InvalidKeysError(comparison.pop())
+            raise InvalidKeysError(list_for_exception)
 
         else:
             new_object = Animes(**data)
@@ -50,12 +54,17 @@ def blue_filter(anime_id):
 def blue_update(anime_id):
     try:
         data = request.json
+
         data_keys = data.keys()
         data_set = set(data_keys)
         comparison = data_set.difference(valid_keys)
 
+        list_for_exception = []
+        for elts in comparison:
+            list_for_exception.append(elts)
+
         if comparison != set():
-            raise InvalidKeysError(comparison.pop())
+            raise InvalidKeysError(list_for_exception)
 
         else:
             to_update = Animes.update(data, anime_id)
